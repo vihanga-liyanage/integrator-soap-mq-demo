@@ -1,0 +1,62 @@
+# American National - Demo 2 (integration) backing services
+# Start:  docker compose up -d
+# Stop:   docker compose down        (add -v to wipe data)
+#
+# Run on the host (not here): mocks/soap_mock.py (8089) and mocks/underwriting_stub.py (8090).
+# Stop the Bijira gateway stacks from Demo 1 first to save memory.
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: an-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # management UI
+    environment:
+      # Custom user: the built-in "guest" user is blocked for connections that
+      # arrive through Docker's port mapping.
+      RABBITMQ_DEFAULT_USER: demo
+      RABBITMQ_DEFAULT_PASS: demo
+    volumes:
+      # Pre-creates the exchange/queues/DLX policy. See rabbitmq/definitions.json.
+      - ./rabbitmq/20-definitions.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+
+  mysql:
+    image: mysql:8.0
+    container_name: an-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: insurance
+      MYSQL_USER: app
+      MYSQL_PASSWORD: apppass
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest   # pin a version once you know what works
+    container_name: an-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC
+      - "4318:4318"     # OTLP HTTP
+
+  ibmmq:
+    image: icr.io/ibm-messaging/mq:latest
+    container_name: an-ibmmq
+    # If the pull fails with "no matching manifest for linux/arm64" (Apple Silicon),
+    # uncomment the next line to run the amd64 image under emulation. Emulation may be
+    # slow or unstable - test it well before the call.
+    platform: linux/amd64
+    environment:
+      LICENSE: accept
+      MQ_QMGR_NAME: QM1
+      MQ_APP_PASSWORD: passw0rd
+      MQ_ADMIN_PASSWORD: passw0rd
+    ports:
+      - "1414:1414"     # queue manager listener
+      - "9443:9443"     # web console (https://localhost:9443/ibmmq/console)

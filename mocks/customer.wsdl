@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:tns="http://americannational.example/customer"
+                  targetNamespace="http://americannational.example/customer">
+
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://americannational.example/customer">
+      <xsd:element name="GetCustomer">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="customerId" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetCustomerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="customerId" type="xsd:string"/>
+            <xsd:element minOccurs="1" maxOccurs="1" name="fullName" type="xsd:string"/>
+            <xsd:element minOccurs="1" maxOccurs="1" name="riskScore" type="xsd:int"/>
+            <xsd:element minOccurs="1" maxOccurs="1" name="status" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="GetCustomerSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCustomer"/>
+  </wsdl:message>
+  <wsdl:message name="GetCustomerSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCustomerResponse"/>
+  </wsdl:message>
+
+  <wsdl:portType name="CustomerServiceSoap">
+    <wsdl:operation name="GetCustomer">
+      <wsdl:input message="tns:GetCustomerSoapIn"/>
+      <wsdl:output message="tns:GetCustomerSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="CustomerServiceSoap" type="tns:CustomerServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetCustomer">
+      <soap:operation soapAction="http://americannational.example/customer/GetCustomer" style="document"/>
+      <wsdl:input><soap:body use="literal"/></wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="CustomerServiceSoap12" type="tns:CustomerServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetCustomer">
+      <soap12:operation soapAction="http://americannational.example/customer/GetCustomer" style="document"/>
+      <wsdl:input><soap12:body use="literal"/></wsdl:input>
+      <wsdl:output><soap12:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="CustomerService">
+    <wsdl:port name="CustomerServiceSoap" binding="tns:CustomerServiceSoap">
+      <soap:address location="http://localhost:8089/customer"/>
+    </wsdl:port>
+    <wsdl:port name="CustomerServiceSoap12" binding="tns:CustomerServiceSoap12">
+      <soap12:address location="http://localhost:8089/customer"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

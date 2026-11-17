@@ -1,0 +1,12 @@
+# Based on Dynatrace's current OTLP docs: HTTP only (binary protobuf), platform token sent as a
+# Bearer header, token scope openpipeline:traces:ingest. Placeholders only; never commit a real token.
+
+[ballerina.observe]
+tracingEnabled = true
+tracingProvider = "otel"
+
+[ballerina.otel]
+tracesEndpoint = "https://<your-environment-id>.live.dynatrace.com/api/v2/otlp/v1/traces"
+tracesProtocol = "http/protobuf"
+# Plain space after "Bearer" (a percent-encoded %20 is NOT decoded by the exporter and gets a 401). Supply the real token via a secret.
+tracesExporterHeaders = "Authorization=Bearer <your-platform-token>"

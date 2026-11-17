@@ -1,0 +1,92 @@
+{
+  "users": [
+    {
+      "name": "demo",
+      "password_hash": "rhYpYrudfVDwI+HcmcT8Xy2hR1lUeNL6xwhK67oHeBgGnGp3",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "demo",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "applications.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "applications.dlx",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "application.received",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "application.received.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "applications.exchange",
+      "vhost": "/",
+      "destination": "application.received",
+      "destination_type": "queue",
+      "routing_key": "application.received",
+      "arguments": {}
+    },
+    {
+      "source": "applications.dlx",
+      "vhost": "/",
+      "destination": "application.received.dlq",
+      "destination_type": "queue",
+      "routing_key": "application.received",
+      "arguments": {}
+    }
+  ],
+  "policies": [
+    {
+      "vhost": "/",
+      "name": "application-received-dlx",
+      "pattern": "^application\\.received$",
+      "apply-to": "queues",
+      "definition": {
+        "dead-letter-exchange": "applications.dlx"
+      },
+      "priority": 0
+    }
+  ]
+}

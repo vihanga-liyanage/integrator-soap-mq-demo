@@ -1,0 +1,17 @@
+# Secrets: never commit
+Config.toml
+**/Config.toml
+*.env
+
+# Build / tooling noise
+target/
+generated/
+.DS_Store
+.vscode/
+__pycache__/
+
+# Discarded hand-written SOAP client
+american_national_demo/_old_copilot/
+
+# Parked files awaiting manual deletion
+_to_delete/

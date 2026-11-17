@@ -1,0 +1,3 @@
+[workspace]
+title = "american-national-demo"
+packages = ["application_intake"]
