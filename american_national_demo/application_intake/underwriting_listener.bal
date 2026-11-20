@@ -1,6 +1,7 @@
 import ballerina/http;
 import ballerina/lang.runtime;
 import ballerina/log;
+import ballerina/observe;
 import ballerinax/rabbitmq;
 
 listener rabbitmq:Listener rabbitmqListener = new (rabbitmqHost, rabbitmqPort,
@@ -36,6 +37,11 @@ service rabbitmq:Service on rabbitmqListener {
 
         log:printError("Giving up, sending to dead-letter queue", applicationId = event.applicationId,
                 reason = lastError is error ? lastError.message() : "unknown");
+        // Experiment: tag the active span as failed so tracing backends can flag the request.
+        error? tagged = observe:addTagToSpan("error", "true");
+        if tagged is error {
+            log:printWarn("Could not tag span as error", reason = tagged.message());
+        }
         check caller->basicNack(requeue = false);
     }
 }

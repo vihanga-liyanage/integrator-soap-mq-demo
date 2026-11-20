@@ -28,3 +28,13 @@ configurable string underwritingUrl = "http://localhost:8090";
 # Delivery attempts before the message is rejected to the dead-letter queue.
 configurable int maxAttempts = 3;
 configurable decimal retryIntervalSeconds = 2;
+
+# IBM MQ queue manager settings (docker-compose service `ibmmq`).
+configurable string mqQueueManager = "QM1";
+configurable string mqHost = "127.0.0.1";
+configurable int mqPort = 1414;
+configurable string mqChannel = "DEV.APP.SVRCONN";
+configurable string mqUser = "app";
+configurable string mqPassword = ?;
+configurable string mqQueueName = "DEV.QUEUE.1";
+configurable decimal mqPollingInterval = 2.0;

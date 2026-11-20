@@ -2,9 +2,13 @@
 org = "vihanga"
 name = "application_intake"
 version = "0.1.0"
-distribution = "2201.14.1"
+distribution = "2201.14.2"
 title = "application_intake"
 
 [build-options]
-sticky = true
 observabilityIncluded = true
+
+[[platform.java21.dependency]]
+groupId = "com.ibm.mq"
+artifactId = "com.ibm.mq.allclient"
+version = "9.4.1.0"
